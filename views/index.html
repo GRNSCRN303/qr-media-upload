@@ -10,6 +10,7 @@
       flex-direction: column;
       align-items: center;
       margin-top: 50px;
+      background-color: #f3f3f3;
     }
     #dropzone {
       border: 2px dashed #666;
@@ -55,23 +56,27 @@
       if (file) uploadFile(file);
     });
 
-    async function uploadFile(file) {
-      const mode = document.getElementById("mode").value;
-      const formData = new FormData();
-      formData.append("file", file);
+   async function uploadFile(file) {
+  const mode = document.getElementById("mode").value;
+  const formData = new FormData();
+  formData.append("file", file);
 
-      const res = await fetch(`/upload?mode=${mode}`, {
-        method: "POST",
-        body: formData
-      });
+  const res = await fetch(`/upload?mode=${mode}`, {
+    method: "POST",
+    body: formData
+  });
 
-      const json = await res.json();
-      result.innerHTML = `
-        <p><strong>Bild-URL:</strong> <a href="${json.imageUrl}" target="_blank">${json.imageUrl}</a></p>
-        <p><strong>QR-URL:</strong> <a href="${json.qrUrl}" target="_blank">${json.qrUrl}</a></p>
-        <img src="${json.qrUrl}" width="200" />
-      `;
-    }
+  const json = await res.json();
+  result.innerHTML = `
+    <p><strong>Bild-URL:</strong> <a href="${json.imageUrl}" target="_blank">${json.imageUrl}</a></p>
+    <p><strong>QR-URL:</strong> <a href="${json.qrUrl}" target="_blank">${json.qrUrl}</a></p>
+    <img id="qrImage" src="${json.qrUrl}" width="200" style="margin-bottom:10px;" />
+    <br />
+    <a href="${json.qrUrl}" download="qr-code.png">
+      <button>⬇️ QR-Code herunterladen</button>
+    </a>
+  `;
+}
   </script>
 </body>
 </html>
