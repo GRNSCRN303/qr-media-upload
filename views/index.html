@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8" />
+  <title>Upload & QR</title>
+  <style>
+    body {
+      font-family: sans-serif;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      margin-top: 50px;
+    }
+    #dropzone {
+      border: 2px dashed #666;
+      padding: 50px;
+      text-align: center;
+      width: 300px;
+    }
+    .result {
+      margin-top: 20px;
+    }
+  </style>
+</head>
+<body>
+  <h1>Bild hochladen & QR generieren</h1>
+  <label for="mode">QR-Modus:</label>
+  <select id="mode">
+    <option value="black">Schwarz auf Transparent</option>
+    <option value="white">Weiß auf Transparent</option>
+  </select>
+
+  <div id="dropzone">Ziehe ein Bild hierher oder klicke</div>
+  <input type="file" id="fileInput" style="display:none" />
+  <div class="result" id="result"></div>
+
+  <script>
+    const dropzone = document.getElementById("dropzone");
+    const fileInput = document.getElementById("fileInput");
+    const result = document.getElementById("result");
+
+    dropzone.addEventListener("click", () => fileInput.click());
+
+    ["dragenter", "dragover", "dragleave", "drop"].forEach(eventName => {
+      dropzone.addEventListener(eventName, e => e.preventDefault(), false);
+    });
+
+    dropzone.addEventListener("drop", e => {
+      const file = e.dataTransfer.files[0];
+      if (file) uploadFile(file);
+    });
+
+    fileInput.addEventListener("change", () => {
+      const file = fileInput.files[0];
+      if (file) uploadFile(file);
+    });
+
+    async function uploadFile(file) {
+      const mode = document.getElementById("mode").value;
+      const formData = new FormData();
+      formData.append("file", file);
+
+      const res = await fetch(`/upload?mode=${mode}`, {
+        method: "POST",
+        body: formData
+      });
+
+      const json = await res.json();
+      result.innerHTML = `
+        <p><strong>Bild-URL:</strong> <a href="${json.imageUrl}" target="_blank">${json.imageUrl}</a></p>
+        <p><strong>QR-URL:</strong> <a href="${json.qrUrl}" target="_blank">${json.qrUrl}</a></p>
+        <img src="${json.qrUrl}" width="200" />
+      `;
+    }
+  </script>
+</body>
+</html>
