@@ -41,7 +41,7 @@ app.use(express.json());
 const storage = multer.diskStorage({
   destination: UPLOAD_DIR,
   filename: (req, file, cb) => {
-    const safeName = Date.now() + "-" + file.originalname.replace(/\s+/g, "_");
+    const safeName = file.originalname.replace(/\s+/g, "_");
     cb(null, safeName);
   }
 });
