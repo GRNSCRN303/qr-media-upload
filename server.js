@@ -19,8 +19,14 @@ const QR_DIR = path.join(__dirname, "qr", "png");
   if (!fs.existsSync(dir)) fs.mkdirSync(dir, { recursive: true });
 });
 
-// Auth middleware
+// Auth only for root page and POST /upload
 app.use((req, res, next) => {
+  const needsAuth =
+    req.path === "/" ||
+    (req.path === "/upload" && req.method === "POST");
+
+  if (!needsAuth) return next();
+
   const user = auth(req);
   if (
     !user ||
@@ -30,8 +36,10 @@ app.use((req, res, next) => {
     res.set("WWW-Authenticate", 'Basic realm="Upload Area"');
     return res.status(401).send("Authentication required.");
   }
+
   next();
 });
+
 
 app.use(express.static("public"));
 app.use("/qr", express.static("qr"));
