@@ -11,7 +11,7 @@ const mime = require("mime-types");
 const app = express();
 const PORT = process.env.PORT || 3000;
 
-const UPLOAD_DIR = path.join(__dirname, "public", "uploads");
+const UPLOAD_DIR = path.join(__dirname, 'uploads');
 const QR_DIR = path.join(__dirname, "qr", "png");
 
 // Ensure folders exist
@@ -40,7 +40,7 @@ app.use((req, res, next) => {
   next();
 });
 
-
+app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 app.use(express.static("public"));
 app.use("/qr", express.static("qr"));
 app.use(express.urlencoded({ extended: true }));
